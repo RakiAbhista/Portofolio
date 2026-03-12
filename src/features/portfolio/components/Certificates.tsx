@@ -1,12 +1,20 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { Certificate } from "@prisma/client";
 import { ExternalLink, Award } from "lucide-react";
 import { useState } from "react";
 
+interface Certificate {
+    id?: string;
+    title?: string;
+    issuer?: string;
+    date?: Date | string;
+    credentialUrl?: string;
+    preview?: string;
+}
+
 interface CertificatesProps {
-    certificates: Partial<Certificate>[];
+    certificates: Certificate[];
 }
 
 export function Certificates({ certificates }: CertificatesProps) {

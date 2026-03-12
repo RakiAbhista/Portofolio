@@ -1,13 +1,23 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { Project } from "@prisma/client";
 import { ExternalLink, Github, FolderGit2 } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 
+interface Project {
+    id?: string;
+    title?: string;
+    description?: string;
+    preview?: string;
+    techStack?: string[];
+    liveUrl?: string;
+    githubUrl?: string;
+    featured?: boolean;
+}
+
 interface ProjectsProps {
-    projects: Partial<Project>[];
+    projects: Project[];
 }
 
 export function Projects({ projects }: ProjectsProps) {
