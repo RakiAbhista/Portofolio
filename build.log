@@ -1,0 +1,29 @@
+
+> portofolio_web@0.1.0 build
+> next build
+
+⚠ No build cache found. Please configure build caching for faster rebuilds. Read more: https://nextjs.org/docs/messages/no-cache
+Attention: Next.js now collects completely anonymous telemetry regarding usage.
+This information is used to shape Next.js' roadmap and prioritize features.
+You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
+https://nextjs.org/telemetry
+
+▲ Next.js 16.1.6 (Turbopack)
+- Environments: .env
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 2.5s
+  Running TypeScript ...
+Failed to compile.
+
+./src/components/Certificates.tsx:4:10
+Type error: Module '"@prisma/client"' has no exported member 'Certificate'.
+
+[0m [90m 2 |[39m
+ [90m 3 |[39m [36mimport[39m { motion } [36mfrom[39m [32m"framer-motion"[39m[33m;[39m
+[31m[1m>[22m[39m[90m 4 |[39m [36mimport[39m { [33mCertificate[39m } [36mfrom[39m [32m"@prisma/client"[39m[33m;[39m
+ [90m   |[39m          [31m[1m^[22m[39m
+ [90m 5 |[39m [36mimport[39m { [33mExternalLink[39m[33m,[39m [33mAward[39m } [36mfrom[39m [32m"lucide-react"[39m[33m;[39m
+ [90m 6 |[39m [36mimport[39m { useState } [36mfrom[39m [32m"react"[39m[33m;[39m
+ [90m 7 |[39m[0m
+Next.js build worker exited with code: 1 and signal: null
