@@ -1,3 +1,4 @@
+import { prisma } from "@/lib/prisma";
 import { Hero } from "@/features/portfolio/components/Hero";
 import { About } from "@/features/portfolio/components/About";
 import { Skills } from "@/features/portfolio/components/Skills";
@@ -6,22 +7,32 @@ import { Certificates } from "@/features/portfolio/components/Certificates";
 import { Contact } from "@/features/portfolio/components/Contact";
 
 export default async function Home() {
-  // In a real app we would fetch from Prisma here if connected
-  // const skills = await prisma.skill.findMany();
-  // const projects = await prisma.project.findMany({ take: 4 });
-  // const certificates = await prisma.certificate.findMany({ take: 4 });
-  const skills: any[] = [];
-  const projects: any[] = [];
-  const certificates: any[] = [];
+  const profile = await prisma.profile.findFirst() || {
+    name: "Raki Abhista Prakoso",
+    title: "Fullstack Developer",
+    description: "A passionate Fullstack Developer...",
+    aboutText: "Developer background..."
+  };
+  
+  const skills = await prisma.skill.findMany();
+  
+  const rawProjects = await prisma.project.findMany();
+  const projects = rawProjects.map((p: any) => ({
+    ...p,
+    techStack: p.techStack ? p.techStack.split(',').map((s: string) => s.trim()) : []
+  }));
+  
+  const certificates = await prisma.certificate.findMany();
+  const socialLinks = await prisma.socialLink.findMany();
 
   return (
     <div className="flex flex-col items-center w-full">
-      <Hero />
-      <About />
+      <Hero profile={profile} />
+      <About profile={profile} />
       <Skills skills={skills} />
       <Projects projects={projects} />
       <Certificates certificates={certificates} />
-      <Contact />
+      <Contact socialLinks={socialLinks} />
     </div>
   );
 }

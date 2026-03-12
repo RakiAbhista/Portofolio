@@ -6,13 +6,13 @@ import Link from "next/link";
 import { useState } from "react";
 
 interface Project {
-    id?: string;
+    id?: string | number;
     title?: string;
     description?: string;
-    preview?: string;
+    preview?: string | null;
     techStack?: string[];
-    liveUrl?: string;
-    githubUrl?: string;
+    liveUrl?: string | null;
+    githubUrl?: string | null;
     featured?: boolean;
 }
 

@@ -2,40 +2,42 @@
 
 import { motion } from "framer-motion";
 import { Mail, Github, Linkedin, Instagram, Send } from "lucide-react";
+import { SocialLink } from "@prisma/client";
 
-export function Contact() {
-    const socialLinks = [
+const iconMap: Record<string, any> = {
+    Mail, Github, Linkedin, Instagram
+};
+
+export function Contact({ socialLinks }: { socialLinks?: SocialLink[] }) {
+    // Fallback if none provided
+    const displayLinks = socialLinks && socialLinks.length > 0 ? socialLinks : [
         {
             name: "Email",
-            icon: Mail,
+            icon: "Mail",
             url: "mailto:hello@example.com",
             color: "text-blue-500",
-            bg: "bg-blue-500/10",
-            border: "hover:border-blue-500/50"
+            id: 1
         },
         {
             name: "GitHub",
-            icon: Github,
+            icon: "Github",
             url: "https://github.com",
             color: "text-foreground",
-            bg: "bg-foreground/10",
-            border: "hover:border-foreground/50"
+            id: 2
         },
         {
             name: "LinkedIn",
-            icon: Linkedin,
+            icon: "Linkedin",
             url: "https://linkedin.com",
             color: "text-blue-600",
-            bg: "bg-blue-600/10",
-            border: "hover:border-blue-600/50"
+            id: 3
         },
         {
             name: "Instagram",
-            icon: Instagram,
+            icon: "Instagram",
             url: "https://instagram.com",
             color: "text-pink-500",
-            bg: "bg-pink-500/10",
-            border: "hover:border-pink-500/50"
+            id: 4
         },
     ];
 
@@ -83,10 +85,10 @@ export function Contact() {
                     }}
                     className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6"
                 >
-                    {socialLinks.map((social) => {
-                        const Icon = social.icon;
+                    {displayLinks.map((social) => {
+                        const Icon = iconMap[social.icon] || Mail;
                         return (
-                            <motion.div key={social.name} variants={{
+                            <motion.div key={social.id || social.name} variants={{
                                 hidden: { opacity: 0, y: 30 },
                                 visible: { opacity: 1, y: 0, transition: { type: "spring" as const, stiffness: 100, damping: 10 } }
                             }}>
@@ -96,10 +98,10 @@ export function Contact() {
                                     href={social.url}
                                     target="_blank"
                                     rel="noreferrer"
-                                    className={`flex flex-col items-center justify-center p-8 rounded-2xl border border-border bg-card shadow-sm transition-all hover:shadow-xl ${social.border} group`}
+                                    className={`flex flex-col items-center justify-center p-8 rounded-2xl border border-border bg-card shadow-sm transition-all hover:shadow-xl hover:border-border/50 group`}
                                 >
-                                    <div className={`p-4 rounded-full ${social.bg} mb-4 transition-transform duration-300 group-hover:scale-110 group-hover:rotate-6`}>
-                                        <Icon className={`w-8 h-8 ${social.color}`} />
+                                    <div className={`p-4 rounded-full bg-muted mb-4 transition-transform duration-300 group-hover:scale-110 group-hover:rotate-6`}>
+                                        <Icon className={`w-8 h-8 ${social.color || 'text-foreground'}`} />
                                     </div>
                                     <span className="font-semibold text-foreground">{social.name}</span>
                                 </motion.a>

@@ -2,8 +2,9 @@
 
 import { motion, Variants } from "framer-motion";
 import { User, Code2, Coffee } from "lucide-react";
+import { Profile } from "@prisma/client";
 
-export function About() {
+export function About({ profile }: { profile?: Profile }) {
     const textVariants: Variants = {
         hidden: { opacity: 0, x: -50 },
         visible: { opacity: 1, x: 0, transition: { duration: 0.6, ease: "easeOut" } }
@@ -57,8 +58,7 @@ export function About() {
 
                         <motion.p variants={textVariants} className="text-lg text-muted-foreground leading-relaxed relative">
                             <span className="absolute -left-4 top-0 text-4xl text-primary/20 font-serif">"</span>
-                            I'm a dedicated full-stack developer with a strong focus on creating beautiful, accessible, and performant user interfaces.
-                            My journey in software development started with a curiosity for how things work on the internet, which quickly evolved into a passion for building robust web applications.
+                            {profile?.aboutText || "I'm a dedicated full-stack developer with a strong focus on creating beautiful, accessible, and performant user interfaces. My journey in software development started with a curiosity for how things work on the internet, which quickly evolved into a passion for building robust web applications."}
                         </motion.p>
 
                         <motion.p variants={textVariants} className="text-lg text-muted-foreground leading-relaxed">

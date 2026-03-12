@@ -3,8 +3,9 @@
 import { motion, Variants } from "framer-motion";
 import Link from "next/link";
 import { ArrowRight, Mail, Sparkles } from "lucide-react";
+import { Profile } from "@prisma/client";
 
-export function Hero() {
+export function Hero({ profile }: { profile?: Profile }) {
     // Animation variants
     const containerVariants: Variants = {
         hidden: { opacity: 0 },
@@ -84,7 +85,7 @@ export function Hero() {
                                 animate="animate"
                                 className="inline-block text-transparent bg-clip-text bg-gradient-to-r from-primary via-secondary to-accent relative"
                             >
-                                Raki Abhista Prakoso
+                                {profile?.name || "Raki Abhista Prakoso"}
                                 {/* Subtle shine effect over the text */}
                                 <motion.span
                                     animate={{
@@ -105,10 +106,11 @@ export function Hero() {
                     <motion.p
                         variants={itemVariants}
                         className="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground sm:text-xl leading-relaxed"
-                    >
-                        A passionate <strong className="text-foreground">Fullstack Developer</strong> crafting elegant, modern, and high-performance digital experiences.
-                        Specialized in <span className="text-primary font-semibold relative inline-block after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-primary after:-z-10">React</span>, <span className="text-secondary font-semibold relative inline-block after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-secondary after:-z-10">Next.js</span>, and <span className="text-accent font-semibold relative inline-block after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-accent after:-z-10">Node.js</span>.
-                    </motion.p>
+                        dangerouslySetInnerHTML={{
+                            __html: profile?.description 
+                                || 'A passionate <strong className="text-foreground">Fullstack Developer</strong> crafting elegant, modern, and high-performance digital experiences. Specialized in <span className="text-primary font-semibold relative inline-block after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-primary after:-z-10">React</span>, <span className="text-secondary font-semibold relative inline-block after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-secondary after:-z-10">Next.js</span>, and <span className="text-accent font-semibold relative inline-block after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-accent after:-z-10">Node.js</span>.'
+                        }}
+                    />
 
                     {/* CTA Buttons */}
                     <motion.div

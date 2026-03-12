@@ -5,12 +5,12 @@ import { ExternalLink, Award } from "lucide-react";
 import { useState } from "react";
 
 interface Certificate {
-    id?: string;
+    id?: string | number;
     title?: string;
     issuer?: string;
     date?: Date | string;
-    credentialUrl?: string;
-    preview?: string;
+    credentialUrl?: string | null;
+    preview?: string | null;
 }
 
 interface CertificatesProps {

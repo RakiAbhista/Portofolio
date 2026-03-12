@@ -1,41 +1,49 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider = "sqlite"
+  url      = "file:./dev.db"
 }
 
-model Project {
-  id          String   @id @default(cuid())
+model Profile {
+  id          Int      @id @default(1)
+  name        String
   title       String
   description String
-  preview     String
-  liveUrl     String?
-  githubUrl   String?
-  techStack   String[]
-  featured    Boolean  @default(false)
-  createdAt   DateTime @default(now())
-}
-
-model Certificate {
-  id        String   @id @default(cuid())
-  title     String
-  issuer    String
-  image     String
-  link      String
-  createdAt DateTime @default(now())
+  aboutText   String
 }
 
 model Skill {
-  id    String  @id @default(cuid())
+  id   Int     @id @default(autoincrement())
+  name String
+  icon String?
+}
+
+model Project {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String
+  preview     String?
+  techStack   String   // comma separated
+  liveUrl     String?
+  githubUrl   String?
+  featured    Boolean  @default(false)
+}
+
+model Certificate {
+  id            Int      @id @default(autoincrement())
+  title         String
+  issuer        String
+  date          DateTime
+  credentialUrl String?
+  preview       String?
+}
+
+model SocialLink {
+  id    Int    @id @default(autoincrement())
   name  String
-  icon  String?
+  icon  String
+  url   String
 }
