@@ -16,8 +16,11 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Developer Portfolio",
-  description: "Modern Fullstack Developer Portfolio",
+  title: "Raki Abhista - Fullstack Developer",
+  description: "Modern Fullstack Developer Portfolio - React, Next.js, Node.js",
+  icons: {
+    icon: "/favicon.svg",
+  },
 };
 
 export default function RootLayout({

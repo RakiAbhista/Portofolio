@@ -1,5 +1,6 @@
 generator client {
   provider = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
 }
 
 datasource db {
@@ -8,42 +9,57 @@ datasource db {
 }
 
 model Profile {
-  id          Int      @id @default(1)
-  name        String
+  id          Int       @id @default(1)
+  name        String    @unique
   title       String
   description String
   aboutText   String
+  image       String?   // Profile/Avatar image URL
+  aboutImage  String?   // About section image URL
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 }
 
 model Skill {
-  id   Int     @id @default(autoincrement())
-  name String
-  icon String?
+  id        Int       @id @default(autoincrement())
+  name      String    @unique
+  icon      String?
+  category  String?   // e.g., "Frontend", "Backend", "Tools", "Language"
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 }
 
 model Project {
-  id          Int      @id @default(autoincrement())
-  title       String
+  id          Int       @id @default(autoincrement())
+  title       String    @unique
   description String
   preview     String?
-  techStack   String   // comma separated
+  techStack   String    // comma separated: "Next.js, Tailwind, Prisma"
   liveUrl     String?
   githubUrl   String?
-  featured    Boolean  @default(false)
+  featured    Boolean   @default(false)
+  order       Int       @default(0)  // for custom ordering
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 }
 
 model Certificate {
-  id            Int      @id @default(autoincrement())
-  title         String
+  id            Int       @id @default(autoincrement())
+  title         String    @unique
   issuer        String
   date          DateTime
   credentialUrl String?
   preview       String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 }
 
 model SocialLink {
-  id    Int    @id @default(autoincrement())
-  name  String
-  icon  String
-  url   String
+  id        Int       @id @default(autoincrement())
+  name      String    @unique
+  icon      String    // Icon name (Mail, Github, Linkedin, Instagram, etc)
+  url       String
+  order     Int       @default(0)  // for custom ordering
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 }

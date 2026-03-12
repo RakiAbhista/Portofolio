@@ -15,29 +15,37 @@ export function Contact({ socialLinks }: { socialLinks?: SocialLink[] }) {
             name: "Email",
             icon: "Mail",
             url: "mailto:hello@example.com",
-            color: "text-blue-500",
-            id: 1
+            id: 1,
+            order: 1,
+            createdAt: new Date(),
+            updatedAt: new Date()
         },
         {
             name: "GitHub",
             icon: "Github",
             url: "https://github.com",
-            color: "text-foreground",
-            id: 2
+            id: 2,
+            order: 2,
+            createdAt: new Date(),
+            updatedAt: new Date()
         },
         {
             name: "LinkedIn",
             icon: "Linkedin",
             url: "https://linkedin.com",
-            color: "text-blue-600",
-            id: 3
+            id: 3,
+            order: 3,
+            createdAt: new Date(),
+            updatedAt: new Date()
         },
         {
             name: "Instagram",
             icon: "Instagram",
             url: "https://instagram.com",
-            color: "text-pink-500",
-            id: 4
+            id: 4,
+            order: 4,
+            createdAt: new Date(),
+            updatedAt: new Date()
         },
     ];
 
@@ -101,7 +109,7 @@ export function Contact({ socialLinks }: { socialLinks?: SocialLink[] }) {
                                     className={`flex flex-col items-center justify-center p-8 rounded-2xl border border-border bg-card shadow-sm transition-all hover:shadow-xl hover:border-border/50 group`}
                                 >
                                     <div className={`p-4 rounded-full bg-muted mb-4 transition-transform duration-300 group-hover:scale-110 group-hover:rotate-6`}>
-                                        <Icon className={`w-8 h-8 ${social.color || 'text-foreground'}`} />
+                                        <Icon className={`w-8 h-8 text-foreground`} />
                                     </div>
                                     <span className="font-semibold text-foreground">{social.name}</span>
                                 </motion.a>

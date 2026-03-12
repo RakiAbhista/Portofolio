@@ -1,7 +1,9 @@
 "use client";
 
 import { motion, Variants } from "framer-motion";
-import { User, Code2, Coffee } from "lucide-react";
+import { ArrowRight } from "lucide-react";
+import Link from "next/link";
+import Image from "next/image";
 import { Profile } from "@prisma/client";
 
 export function About({ profile }: { profile?: Profile }) {
@@ -21,62 +23,78 @@ export function About({ profile }: { profile?: Profile }) {
     };
 
     return (
-        <section id="about" className="relative w-full py-16 md:py-24 bg-muted/30 overflow-hidden">
-            {/* Decorative background circle */}
-            <motion.div
-                animate={{
-                    scale: [1, 1.1, 1],
-                    opacity: [0.1, 0.2, 0.1]
-                }}
-                transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-                className="absolute -right-64 top-0 w-96 h-96 bg-primary/20 rounded-full blur-3xl -z-10 pointer-events-none"
-            />
+        <section id="about" className="relative w-full py-20 md:py-32 overflow-hidden">
+            {/* Subtle gradient background */}
+            <div className="absolute inset-0 bg-gradient-to-b from-primary/5 via-transparent to-secondary/5 pointer-events-none" />
 
-            <div className="container mx-auto max-w-6xl px-4 sm:px-6">
-                <div className="grid gap-12 md:grid-cols-2 lg:gap-16 items-center">
-
+            <div className="container mx-auto max-w-6xl px-4 sm:px-6 relative z-10">
+                <div className="grid gap-12 md:grid-cols-2 lg:gap-20 items-center">
+                    {/* Left Content */}
                     <motion.div
                         initial="hidden"
                         whileInView="visible"
                         viewport={{ once: true, margin: "-100px" }}
                         transition={{ staggerChildren: 0.2 }}
-                        className="space-y-6"
+                        className="space-y-8"
                     >
-                        <motion.div variants={textVariants}>
-                            <h2 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl flex items-center gap-3">
-                                <User className="w-8 h-8 text-primary" />
-                                About Me
-                            </h2>
-                            <motion.div
-                                initial={{ width: 0 }}
-                                whileInView={{ width: "5rem" }}
-                                viewport={{ once: true }}
-                                transition={{ duration: 0.8, delay: 0.2 }}
-                                className="h-1 bg-gradient-to-r from-primary to-accent rounded-full mt-4"
-                            />
+                        <motion.div variants={textVariants} className="space-y-4">
+                            <div className="flex items-center gap-3">
+                                <motion.div
+                                    className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center"
+                                    whileHover={{ scale: 1.1, rotate: 10 }}
+                                >
+                                    <span className="text-white font-bold text-lg">✨</span>
+                                </motion.div>
+                                <h2 className="text-sm font-semibold uppercase tracking-wider text-primary">About Me</h2>
+                            </div>
+                            <h3 className="text-4xl md:text-5xl font-bold tracking-tight leading-tight">
+                                Crafting Digital Experiences
+                            </h3>
                         </motion.div>
 
-                        <motion.p variants={textVariants} className="text-lg text-muted-foreground leading-relaxed relative">
-                            <span className="absolute -left-4 top-0 text-4xl text-primary/20 font-serif">"</span>
-                            {profile?.aboutText || "I'm a dedicated full-stack developer with a strong focus on creating beautiful, accessible, and performant user interfaces. My journey in software development started with a curiosity for how things work on the internet, which quickly evolved into a passion for building robust web applications."}
+                        <motion.p
+                            variants={textVariants}
+                            className="text-lg text-muted-foreground leading-relaxed max-w-xl"
+                        >
+                            {profile?.aboutText || "I'm a dedicated full-stack developer focused on creating beautiful, accessible, and performant user interfaces. My journey in software development started with curiosity, which evolved into a passion for building robust applications."}
                         </motion.p>
 
-                        <motion.p variants={textVariants} className="text-lg text-muted-foreground leading-relaxed">
-                            When I'm not writing code, you can find me exploring new technologies, contributing to open-source projects, or sharing my knowledge with the developer community. I believe in continuous learning and always strive to stay updated with the latest industry trends.
-                        </motion.p>
+                        <motion.div variants={textVariants} className="pt-4">
+                            <Link
+                                href="#projects"
+                                className="inline-flex items-center gap-3 text-lg font-medium text-primary hover:gap-5 transition-all duration-300 group"
+                            >
+                                Explore My Work
+                                <motion.div
+                                    animate={{ x: [0, 5, 0] }}
+                                    transition={{ duration: 1.5, repeat: Infinity }}
+                                >
+                                    <ArrowRight className="w-5 h-5" />
+                                </motion.div>
+                            </Link>
+                        </motion.div>
 
-                        <motion.div variants={textVariants} className="flex gap-4 pt-4">
-                            <div className="flex items-center gap-2 px-4 py-2 bg-card rounded-lg border border-border shadow-sm">
-                                <Code2 className="w-5 h-5 text-secondary" />
-                                <span className="font-medium">Clean Code</span>
+                        {/* Stats */}
+                        <motion.div
+                            variants={textVariants}
+                            className="grid grid-cols-3 gap-6 pt-8 border-t border-border/50"
+                        >
+                            <div>
+                                <div className="text-2xl font-bold text-primary">5+</div>
+                                <p className="text-sm text-muted-foreground mt-1">Featured Projects</p>
                             </div>
-                            <div className="flex items-center gap-2 px-4 py-2 bg-card rounded-lg border border-border shadow-sm">
-                                <Coffee className="w-5 h-5 text-accent" />
-                                <span className="font-medium">Coffee Powered</span>
+                            <div>
+                                <div className="text-2xl font-bold text-secondary">14+</div>
+                                <p className="text-sm text-muted-foreground mt-1">Technologies</p>
+                            </div>
+                            <div>
+                                <div className="text-2xl font-bold text-accent">5+</div>
+                                <p className="text-sm text-muted-foreground mt-1">Certifications</p>
                             </div>
                         </motion.div>
                     </motion.div>
 
+                    {/* Right Image */}
                     <motion.div
                         initial="hidden"
                         whileInView="visible"
@@ -84,35 +102,50 @@ export function About({ profile }: { profile?: Profile }) {
                         variants={imageVariants}
                         className="relative"
                     >
-                        {/* Morphing shape behind image */}
+                        {/* Floating cards in background */}
                         <motion.div
-                            animate={{
-                                borderRadius: ["30% 70% 70% 30% / 30% 30% 70% 70%", "50% 50% 20% 80% / 25% 80% 20% 75%", "30% 70% 70% 30% / 30% 30% 70% 70%"]
-                            }}
-                            transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-                            className="absolute inset-0 bg-gradient-to-tr from-primary/30 to-secondary/30 scale-105 blur-lg -z-10"
+                            animate={{ y: [0, -20, 0], x: [0, 10, 0] }}
+                            transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                            className="absolute -top-8 -right-8 w-32 h-32 bg-gradient-to-br from-primary/20 to-secondary/20 rounded-2xl blur-2xl"
                         />
 
+                        {/* Main Image Container */}
                         <motion.div
-                            whileHover={{ scale: 1.02, rotate: 1 }}
+                            whileHover={{ scale: 1.02, y: -5 }}
                             transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                            className="relative aspect-square md:aspect-[4/5] w-full rounded-2xl overflow-hidden border border-border bg-card shadow-xl flex items-center justify-center group"
+                            className="relative w-full aspect-square rounded-3xl overflow-hidden border border-border/50 shadow-2xl group"
                         >
-                            <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-secondary/20 to-accent/20 transition-opacity duration-500 group-hover:opacity-50"></div>
+                            {/* Image with fallback */}
+                            {profile?.aboutImage ? (
+                                <Image
+                                    src={profile.aboutImage}
+                                    alt="About section"
+                                    fill
+                                    className="object-cover group-hover:scale-110 transition-transform duration-500"
+                                    priority
+                                />
+                            ) : (
+                                <div className="w-full h-full bg-gradient-to-br from-primary/30 via-secondary/30 to-accent/30 flex items-center justify-center">
+                                    <div className="text-center">
+                                        <div className="text-6xl mb-4">📸</div>
+                                        <p className="text-muted-foreground text-sm">Upload image in Prisma Studio</p>
+                                    </div>
+                                </div>
+                            )}
 
-                            <motion.div
-                                animate={{ scale: [1, 1.05, 1] }}
-                                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-                                className="z-10 text-6xl font-black text-foreground/5 tracking-tighter mix-blend-overlay rotate-[-15deg]"
-                            >
-                                DEVELOPER
-                            </motion.div>
+                            {/* Overlay gradient */}
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
-                            {/* Shine effect on hover */}
-                            <div className="absolute inset-0 -translate-x-[150%] skew-x-12 bg-gradient-to-r from-transparent via-white/20 to-transparent group-hover:animate-[sweep_1.5s_ease-in-out]" />
-
-                            <div className="absolute inset-0 ring-1 ring-inset ring-black/10 dark:ring-white/10 rounded-2xl" />
+                            {/* Border glow */}
+                            <div className="absolute inset-0 rounded-3xl ring-1 ring-inset ring-white/10" />
                         </motion.div>
+
+                        {/* Floating elements */}
+                        <motion.div
+                            animate={{ rotate: 360 }}
+                            transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+                            className="absolute -bottom-16 -right-16 w-40 h-40 bg-gradient-to-br from-accent/30 to-secondary/30 rounded-full blur-3xl"
+                        />
                     </motion.div>
                 </div>
             </div>

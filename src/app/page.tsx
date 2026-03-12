@@ -7,12 +7,7 @@ import { Certificates } from "@/features/portfolio/components/Certificates";
 import { Contact } from "@/features/portfolio/components/Contact";
 
 export default async function Home() {
-  const profile = await prisma.profile.findFirst() || {
-    name: "Raki Abhista Prakoso",
-    title: "Fullstack Developer",
-    description: "A passionate Fullstack Developer...",
-    aboutText: "Developer background..."
-  };
+  const profile = (await prisma.profile.findFirst()) ?? undefined;
   
   const skills = await prisma.skill.findMany();
   

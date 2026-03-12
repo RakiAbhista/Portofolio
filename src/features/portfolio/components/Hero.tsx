@@ -2,7 +2,6 @@
 
 import { motion, Variants } from "framer-motion";
 import Link from "next/link";
-import { ArrowRight, Mail, Sparkles } from "lucide-react";
 import { Profile } from "@prisma/client";
 
 export function Hero({ profile }: { profile?: Profile }) {
@@ -39,9 +38,9 @@ export function Hero({ profile }: { profile?: Profile }) {
     };
 
     return (
-        <section id="hero" className="relative w-full pt-24 pb-32 md:pt-32 md:pb-40 lg:pt-40 lg:pb-48 overflow-x-clip overflow-y-visible">
-            {/* Animated Background Blobs */}
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] sm:w-[800px] sm:h-[800px] opacity-20 dark:opacity-30 pointer-events-none -z-10 blur-[80px] sm:blur-[120px]">
+        <section id="hero" className="relative w-full pt-32 pb-40 md:pt-40 md:pb-48 lg:pt-48 lg:pb-56 overflow-x-clip overflow-y-visible">
+            {/* Animated gradient background */}
+            <div className="absolute inset-0 overflow-hidden -z-10">
                 <motion.div
                     animate={{
                         scale: [1, 1.2, 1],
@@ -52,101 +51,75 @@ export function Hero({ profile }: { profile?: Profile }) {
                         repeat: Infinity,
                         ease: "linear"
                     }}
-                    className="w-full h-full bg-gradient-to-tr from-primary via-secondary to-accent rounded-full"
+                    className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-tr from-primary via-secondary to-accent rounded-full blur-[100px] opacity-20 dark:opacity-30"
                 />
             </div>
 
             <div className="container mx-auto max-w-6xl px-4 sm:px-6 relative z-10">
                 <motion.div
-                    className="flex flex-col items-center text-center space-y-8"
+                    className="flex flex-col items-center text-center space-y-10"
                     variants={containerVariants}
                     initial="hidden"
                     animate="visible"
                 >
-                    {/* Badge */}
+                    {/* Status Button */}
                     <motion.div variants={itemVariants}>
-                        <motion.div
+                        <motion.a
+                            href="mailto:rakiabhistaprakoso@gmail.com"
                             whileHover={{ scale: 1.05 }}
                             whileTap={{ scale: 0.95 }}
-                            className="inline-flex items-center rounded-full border border-primary/20 bg-primary/10 px-4 py-1.5 text-sm font-medium text-primary mb-6 cursor-pointer shadow-[0_0_15px_rgba(59,130,246,0.15)] dark:shadow-[0_0_20px_rgba(59,130,246,0.2)]"
+                            className="inline-flex items-center gap-2 px-6 py-3 rounded-full border border-white/20 bg-linear-to-r from-blue-500/40 via-purple-500/40 to-red-500/40 backdrop-blur-md hover:border-white/40 hover:from-blue-500/50 hover:via-purple-500/50 hover:to-red-500/50 transition-all cursor-pointer text-base font-semibold text-white shadow-lg shadow-purple-500/20"
                         >
-                            <Sparkles className="h-4 w-4 mr-2" />
-                            <span className="flex h-2 w-2 rounded-full bg-primary mr-2 animate-pulse"></span>
-                            Available for new projects
-                        </motion.div>
+                            <span className="w-2.5 h-2.5 rounded-full bg-green-400 animate-pulse"></span>
+                            Open for collaborations
+                        </motion.a>
                     </motion.div>
 
-                    {/* Heading */}
-                    <motion.div variants={itemVariants} className="relative">
-                        <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl">
-                            Hi, I'm{" "}
+                    {/* Main Heading */}
+                    <motion.div variants={itemVariants} className="space-y-6 max-w-4xl">
+                        <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight leading-tight">
+                            Hey, I'm{" "}
                             <motion.span
                                 variants={floatVariants}
                                 animate="animate"
-                                className="inline-block text-transparent bg-clip-text bg-gradient-to-r from-primary via-secondary to-accent relative"
+                                className="inline-block text-transparent bg-clip-text bg-linear-to-r from-primary via-secondary to-accent"
                             >
-                                {profile?.name || "Raki Abhista Prakoso"}
-                                {/* Subtle shine effect over the text */}
-                                <motion.span
-                                    animate={{
-                                        backgroundPosition: ["200% center", "-200% center"]
-                                    }}
-                                    transition={{
-                                        duration: 5,
-                                        repeat: Infinity,
-                                        ease: "linear"
-                                    }}
-                                    className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent bg-[length:200%_auto] bg-clip-text text-transparent pointer-events-none"
-                                />
+                                {profile?.name || "Raki Abhista"}
                             </motion.span>
                         </h1>
+                        <p className="text-xl md:text-2xl text-muted-foreground font-light leading-relaxed">
+                            {profile?.title || "Fullstack Developer"} — Building modern, elegant digital experiences
+                        </p>
                     </motion.div>
 
-                    {/* Subheading */}
+                    {/* Description */}
                     <motion.p
                         variants={itemVariants}
-                        className="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground sm:text-xl leading-relaxed"
-                        dangerouslySetInnerHTML={{
-                            __html: profile?.description 
-                                || 'A passionate <strong className="text-foreground">Fullstack Developer</strong> crafting elegant, modern, and high-performance digital experiences. Specialized in <span className="text-primary font-semibold relative inline-block after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-primary after:-z-10">React</span>, <span className="text-secondary font-semibold relative inline-block after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-secondary after:-z-10">Next.js</span>, and <span className="text-accent font-semibold relative inline-block after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-accent after:-z-10">Node.js</span>.'
-                        }}
-                    />
+                        className="max-w-2xl text-lg text-muted-foreground leading-relaxed"
+                    >
+                        I create beautiful, performant web applications with a focus on user experience. Specializing in React, Next.js, and modern web technologies.
+                    </motion.p>
 
-                    {/* CTA Buttons */}
+                    {/* Scroll CTA - Subtle */}
                     <motion.div
                         variants={itemVariants}
-                        className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto mt-8 relative"
+                        className="pt-8"
                     >
-                        {/* Primary Button */}
-                        <motion.div whileHover={{ scale: 1.05, y: -2 }} whileTap={{ scale: 0.95 }}>
-                            <Link
-                                href="#projects"
-                                className="inline-flex h-12 items-center justify-center rounded-md bg-primary px-8 text-sm font-medium text-primary-foreground shadow-lg shadow-primary/30 dark:shadow-primary/20 transition-all hover:bg-primary/90 hover:shadow-primary/50 relative overflow-hidden group"
+                        <Link
+                            href="#about"
+                            className="inline-flex flex-col items-center gap-3 text-muted-foreground hover:text-foreground transition-colors group"
+                        >
+                            <span className="text-sm font-medium">Scroll to explore</span>
+                            <motion.div
+                                animate={{ y: [0, 8, 0] }}
+                                transition={{ duration: 2, repeat: Infinity }}
+                                className="p-2 rounded-full border border-border group-hover:border-foreground/50 transition-colors"
                             >
-                                <span className="relative z-10 flex items-center">
-                                    View Projects
-                                    <motion.div
-                                        animate={{ x: [0, 5, 0] }}
-                                        transition={{ duration: 1.5, repeat: Infinity }}
-                                    >
-                                        <ArrowRight className="ml-2 h-4 w-4" />
-                                    </motion.div>
-                                </span>
-                                {/* Button hover sweep effect */}
-                                <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent group-hover:animate-[sweep_1s_ease-in-out_infinite]" />
-                            </Link>
-                        </motion.div>
-
-                        {/* Secondary Button */}
-                        <motion.div whileHover={{ scale: 1.05, y: -2 }} whileTap={{ scale: 0.95 }}>
-                            <Link
-                                href="#contact"
-                                className="group inline-flex h-12 items-center justify-center rounded-md border border-input bg-background/50 backdrop-blur-sm px-8 text-sm font-medium shadow-sm transition-all hover:bg-accent hover:border-accent hover:text-accent-foreground"
-                            >
-                                Contact Me
-                                <Mail className="ml-2 h-4 w-4 transition-transform group-hover:-rotate-12 group-hover:scale-110" />
-                            </Link>
-                        </motion.div>
+                                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                                </svg>
+                            </motion.div>
+                        </Link>
                     </motion.div>
                 </motion.div>
             </div>
