@@ -110,16 +110,7 @@ function LoginContent() {
             </button>
           </form>
 
-          {/* Test Credentials Info */}
-          <div className="mt-6 pt-6 border-t border-border">
-            <p className="text-xs text-muted-foreground mb-2 font-medium">Test Credentials:</p>
-            <div className="space-y-1 text-xs text-muted-foreground">
-              <p><span className="font-mono">reveth@gmail.com</span> - superadmin</p>
-              <p><span className="font-mono">lufeay@gmail.com</span> - admin</p>
-              <p><span className="font-mono">piplouie@gmail.com</span> - admin</p>
-              <p>Password: <span className="font-mono">admin123</span> or <span className="font-mono">superadmin1784</span></p>
-            </div>
-          </div>
+
         </div>
 
         {/* Footer Text */}
