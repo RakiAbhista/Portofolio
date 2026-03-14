@@ -80,7 +80,10 @@ export default function BotsPage() {
    */
   const startBotViaWebSocket = (bot: MinecraftBot): Promise<void> => {
     return new Promise((resolve, reject) => {
-      const ws = new WebSocket(`ws://localhost:3001?botId=${bot.id}`);
+      const protocol = typeof window !== 'undefined' && window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+      const host = typeof window !== 'undefined' ? window.location.host : 'localhost:3001';
+      const wsUrl = `${protocol}//${host}?botId=${bot.id}`;
+      const ws = new WebSocket(wsUrl);
       const timeout = setTimeout(() => {
         ws.close();
         reject(new Error("Bot start timeout - no response from server"));
@@ -140,7 +143,10 @@ export default function BotsPage() {
    */
   const stopBotViaWebSocket = (bot: MinecraftBot): Promise<void> => {
     return new Promise((resolve, reject) => {
-      const ws = new WebSocket(`ws://localhost:3001?botId=${bot.id}`);
+      const protocol = typeof window !== 'undefined' && window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+      const host = typeof window !== 'undefined' ? window.location.host : 'localhost:3001';
+      const wsUrl = `${protocol}//${host}?botId=${bot.id}`;
+      const ws = new WebSocket(wsUrl);
       const timeout = setTimeout(() => {
         ws.close();
         reject(new Error("Bot stop timeout - no response from server"));

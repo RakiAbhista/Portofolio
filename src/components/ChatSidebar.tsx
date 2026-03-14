@@ -29,10 +29,17 @@ export function ChatSidebar({ botId, onClose }: ChatSidebarProps) {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // WebSocket connection
+  // WebSocket connection with dynamic URL based on current domain
   useEffect(() => {
     console.log(`🔌 Attempting to connect to bot ${botId}...`);
-    const ws = new WebSocket(`ws://localhost:3001?botId=${botId}`);
+    
+    // Determine WebSocket URL based on current domain
+    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    const host = window.location.host; // Includes domain:port
+    const wsUrl = `${protocol}//${host}?botId=${botId}`;
+    
+    console.log(`📡 Connecting to: ${wsUrl}`);
+    const ws = new WebSocket(wsUrl);
 
     ws.onopen = () => {
       console.log(`✅ WebSocket opened for bot ${botId}`);
