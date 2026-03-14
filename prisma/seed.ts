@@ -1,18 +1,55 @@
 import { PrismaClient } from '@prisma/client'
+import bcryptjs from 'bcryptjs'
 
 const prisma = new PrismaClient()
 
 async function main() {
   console.log("🌱 Starting database seed...");
 
-  // Clear existing data
+  // Clear existing data (preserve User and MinecraftBot for now)
   await prisma.socialLink.deleteMany();
   await prisma.certificate.deleteMany();
   await prisma.project.deleteMany();
   await prisma.skill.deleteMany();
   await prisma.profile.deleteMany();
 
+  // ============= SEED USERS =============
+  console.log("👤 Seeding users...");
+  
+  const users = [
+    {
+      email: "reveth@gmail.com",
+      password: "superadmin1784",
+      role: "superadmin"
+    },
+    {
+      email: "lufeay@gmail.com",
+      password: "admin123",
+      role: "admin"
+    },
+    {
+      email: "piplouie@gmail.com",
+      password: "admin123",
+      role: "admin"
+    }
+  ];
+
+  for (const user of users) {
+    const hashedPassword = await bcryptjs.hash(user.password, 10);
+    await prisma.user.upsert({
+      where: { email: user.email },
+      update: {},
+      create: {
+        email: user.email,
+        password: hashedPassword,
+        role: user.role
+      }
+    });
+    console.log(`  ✓ Created user: ${user.email} (${user.role})`);
+  }
+
   // Profile
+
   const profile = await prisma.profile.create({
     data: {
       name: "Raki Abhista Prakoso",

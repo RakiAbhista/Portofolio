@@ -8,6 +8,30 @@ datasource db {
   url      = "file:./dev.db"
 }
 
+// ============= USER & AUTHENTICATION =============
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String   // hashed with bcryptjs
+  role      String   @default("admin") // "superadmin" | "admin"
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// ============= MINECRAFT BOT MANAGEMENT =============
+model MinecraftBot {
+  id        String   @id @default(cuid())
+  botUsername String
+  serverName  String
+  serverIp    String
+  serverPort  Int     @default(25565)
+  version     String? // optional, allows auto-detection
+  status      String  @default("offline") // "online" | "offline" | "error"
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// ============= EXISTING PORTFOLIO MODELS =============
 model Profile {
   id          Int       @id @default(1)
   name        String    @unique
