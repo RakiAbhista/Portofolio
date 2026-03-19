@@ -8,7 +8,7 @@
   "scripts": {
     "dev": "tsx server.ts",
     "build": "next build",
-    "start": "NODE_ENV=production node --loader tsx server.ts",
+    "start": "NODE_ENV=production node --import tsx server.ts",
     "lint": "eslint",
     "prisma:migrate": "prisma migrate dev",
     "prisma:seed": "tsx prisma/seed.ts",
