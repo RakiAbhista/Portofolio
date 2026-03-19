@@ -80,13 +80,18 @@ export default function BotsPage() {
    */
   const startBotViaWebSocket = (bot: MinecraftBot): Promise<void> => {
     return new Promise((resolve, reject) => {
-      // Smart URL detection untuk localhost & VPS
       const getWsUrl = () => {
+        // 1. Prioritaskan URL dari .env.local (Untuk VPS / Production)
+        if (process.env.NEXT_PUBLIC_WS_URL) {
+          return process.env.NEXT_PUBLIC_WS_URL;
+        }
+
+        // 2. Fallback kalau .env kosong (Untuk Localhost)
         if (typeof window !== 'undefined') {
           const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-          const host = window.location.host;
-          // Extract domain, strip port, add port 3001
-          return `${protocol}//${host.split(':')[0]}:3001`;
+          const host = window.location.hostname;
+          const wsPort = process.env.NEXT_PUBLIC_WS_PORT || "3001";
+          return `${protocol}//${host}:${wsPort}`;
         }
         return 'ws://localhost:3001';
       };
@@ -153,13 +158,18 @@ export default function BotsPage() {
    */
   const stopBotViaWebSocket = (bot: MinecraftBot): Promise<void> => {
     return new Promise((resolve, reject) => {
-      // Smart URL detection untuk localhost & VPS
       const getWsUrl = () => {
+        // 1. Prioritaskan URL dari .env.local (Untuk VPS / Production)
+        if (process.env.NEXT_PUBLIC_WS_URL) {
+          return process.env.NEXT_PUBLIC_WS_URL;
+        }
+
+        // 2. Fallback kalau .env kosong (Untuk Localhost)
         if (typeof window !== 'undefined') {
           const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-          const host = window.location.host;
-          // Extract domain, strip port, add port 3001
-          return `${protocol}//${host.split(':')[0]}:3001`;
+          const host = window.location.hostname;
+          const wsPort = process.env.NEXT_PUBLIC_WS_PORT || "3001";
+          return `${protocol}//${host}:${wsPort}`;
         }
         return 'ws://localhost:3001';
       };
