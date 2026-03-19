@@ -29,14 +29,31 @@ export function ChatSidebar({ botId, onClose }: ChatSidebarProps) {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // WebSocket connection with dynamic URL based on current domain
+  // WebSocket connection with smart URL detection (works on localhost & VPS)
   useEffect(() => {
     console.log(`🔌 Attempting to connect to bot ${botId}...`);
     
-    // Determine WebSocket URL based on current domain
-    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-    const host = window.location.host; // Includes domain:port
-    const wsUrl = `${protocol}//${host}?botId=${botId}`;
+    // Smart URL detection - works on both localhost & VPS
+    const getWsUrl = () => {
+      // 1. Prioritaskan Environment Variable untuk Production / VPS
+      if (process.env.NEXT_PUBLIC_WS_URL) {
+        return process.env.NEXT_PUBLIC_WS_URL;
+      }
+
+      // 2. Fallback dinamis untuk Localhost / Testing
+      if (typeof window !== "undefined") {
+        const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
+        const host = window.location.hostname; // Hanya ambil domain/IP, buang port
+        const wsPort = process.env.NEXT_PUBLIC_WS_PORT || "3001";
+        return `${protocol}//${host}:${wsPort}`;
+      }
+      
+      // 3. Fallback terakhir
+      return "ws://localhost:3001";
+    };
+
+    const wsBaseUrl = getWsUrl();
+    const wsUrl = `${wsBaseUrl}?botId=${botId}`;
     
     console.log(`📡 Connecting to: ${wsUrl}`);
     const ws = new WebSocket(wsUrl);

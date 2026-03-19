@@ -352,15 +352,15 @@ app.prepare().then(async () => {
     console.log(`
 ╭─────────────────────────────────────╮
 │  🚀 Dashboard Bot Manager Ready      │
-│  HTTP: http://localhost:${PORT}
-│  WebSocket: ws://localhost:${WS_PORT}
+│  HTTP Port: ${PORT}
+│  WebSocket Port: ${WS_PORT}
 │  Mineflayer Integration: ✅ Active
 ╰─────────────────────────────────────╯
     `);
   });
 
   wsServer.listen(WS_PORT, () => {
-    console.log(`✅ WebSocket server listening on ws://localhost:${WS_PORT}`);
+    console.log(`✅ WebSocket server listening on port ${WS_PORT}`);
   });
 
   // Keep the reference for cleanup

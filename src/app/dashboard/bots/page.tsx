@@ -80,9 +80,19 @@ export default function BotsPage() {
    */
   const startBotViaWebSocket = (bot: MinecraftBot): Promise<void> => {
     return new Promise((resolve, reject) => {
-      const protocol = typeof window !== 'undefined' && window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-      const host = typeof window !== 'undefined' ? window.location.host : 'localhost:3001';
-      const wsUrl = `${protocol}//${host}?botId=${bot.id}`;
+      // Smart URL detection untuk localhost & VPS
+      const getWsUrl = () => {
+        if (typeof window !== 'undefined') {
+          const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+          const host = window.location.host;
+          // Extract domain, strip port, add port 3001
+          return `${protocol}//${host.split(':')[0]}:3001`;
+        }
+        return 'ws://localhost:3001';
+      };
+      
+      const wsBaseUrl = getWsUrl();
+      const wsUrl = `${wsBaseUrl}?botId=${bot.id}`;
       const ws = new WebSocket(wsUrl);
       const timeout = setTimeout(() => {
         ws.close();
@@ -143,9 +153,19 @@ export default function BotsPage() {
    */
   const stopBotViaWebSocket = (bot: MinecraftBot): Promise<void> => {
     return new Promise((resolve, reject) => {
-      const protocol = typeof window !== 'undefined' && window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-      const host = typeof window !== 'undefined' ? window.location.host : 'localhost:3001';
-      const wsUrl = `${protocol}//${host}?botId=${bot.id}`;
+      // Smart URL detection untuk localhost & VPS
+      const getWsUrl = () => {
+        if (typeof window !== 'undefined') {
+          const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+          const host = window.location.host;
+          // Extract domain, strip port, add port 3001
+          return `${protocol}//${host.split(':')[0]}:3001`;
+        }
+        return 'ws://localhost:3001';
+      };
+      
+      const wsBaseUrl = getWsUrl();
+      const wsUrl = `${wsBaseUrl}?botId=${bot.id}`;
       const ws = new WebSocket(wsUrl);
       const timeout = setTimeout(() => {
         ws.close();
