@@ -80,24 +80,9 @@ export default function BotsPage() {
    */
   const startBotViaWebSocket = (bot: MinecraftBot): Promise<void> => {
     return new Promise((resolve, reject) => {
-      const getWsUrl = () => {
-        // 1. Prioritaskan URL dari .env.local (Untuk VPS / Production)
-        if (process.env.NEXT_PUBLIC_WS_URL) {
-          return process.env.NEXT_PUBLIC_WS_URL;
-        }
-
-        // 2. Fallback kalau .env kosong (Untuk Localhost)
-        if (typeof window !== 'undefined') {
-          const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-          const host = window.location.hostname;
-          const wsPort = process.env.NEXT_PUBLIC_WS_PORT || "3001";
-          return `${protocol}//${host}:${wsPort}`;
-        }
-        return 'ws://localhost:3001';
-      };
-      
-      const wsBaseUrl = getWsUrl();
-      const wsUrl = `${wsBaseUrl}?botId=${bot.id}`;
+      // Get domain from current window, works with both rakiabhista.my.id and www.rakiabhista.my.id
+      const domain = typeof window !== 'undefined' ? window.location.hostname : 'rakiabhista.my.id';
+      const wsUrl = `wss://${domain}/ws-api/?botId=${bot.id}`;
       const ws = new WebSocket(wsUrl);
       const timeout = setTimeout(() => {
         ws.close();
@@ -158,24 +143,9 @@ export default function BotsPage() {
    */
   const stopBotViaWebSocket = (bot: MinecraftBot): Promise<void> => {
     return new Promise((resolve, reject) => {
-      const getWsUrl = () => {
-        // 1. Prioritaskan URL dari .env.local (Untuk VPS / Production)
-        if (process.env.NEXT_PUBLIC_WS_URL) {
-          return process.env.NEXT_PUBLIC_WS_URL;
-        }
-
-        // 2. Fallback kalau .env kosong (Untuk Localhost)
-        if (typeof window !== 'undefined') {
-          const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-          const host = window.location.hostname;
-          const wsPort = process.env.NEXT_PUBLIC_WS_PORT || "3001";
-          return `${protocol}//${host}:${wsPort}`;
-        }
-        return 'ws://localhost:3001';
-      };
-      
-      const wsBaseUrl = getWsUrl();
-      const wsUrl = `${wsBaseUrl}?botId=${bot.id}`;
+      // Get domain from current window, works with both rakiabhista.my.id and www.rakiabhista.my.id
+      const domain = typeof window !== 'undefined' ? window.location.hostname : 'rakiabhista.my.id';
+      const wsUrl = `wss://${domain}/ws-api/?botId=${bot.id}`;
       const ws = new WebSocket(wsUrl);
       const timeout = setTimeout(() => {
         ws.close();
