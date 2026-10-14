@@ -1,0 +1,125 @@
+name: Deploy to RupaCloud (Next.js)
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    name: Auto-Deploy to Container
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📥 Checkout Code
+        uses: actions/checkout@v4
+
+      - name: 🌐 Persiapan Koneksi Cloudflare SSH (Bypass NAT/Firewall)
+        run: |
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+          if echo "${{ secrets.SERVER_IP }}" | grep -qE '.[a-zA-Z]{2,}$'; then
+            echo "Mengunduh client Cloudflare Tunnel untuk koneksi SSH..."
+            sudo curl -fsSL https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64 -o /usr/local/bin/cloudflared
+            sudo chmod +x /usr/local/bin/cloudflared
+            cat << 'EOF' >> ~/.ssh/config
+          Host *
+            ProxyCommand /usr/local/bin/cloudflared access ssh --hostname %h
+            StrictHostKeyChecking no
+            UserKnownHostsFile /dev/null
+          EOF
+          else
+            echo "Menggunakan koneksi IP langsung."
+          fi
+
+      - name: 🚀 SSH to RupaCloud Container & Deploy
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          SERVER_HOST: ${{ secrets.SERVER_IP }}
+          SERVER_PORT: ${{ secrets.SERVER_PORT || 22 }}
+          APP_ENV_CONTENT: ${{ secrets.APP_ENV }}
+        run: |
+          echo "$SSH_PRIVATE_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh -i ~/.ssh/deploy_key -p $SERVER_PORT -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ConnectTimeout=30 root@$SERVER_HOST "bash -s" << 'REMOTE_SCRIPT_EOF'
+            set -e
+            export GIT_TERMINAL_PROMPT=0
+
+            # 1. Sinkronisasi repositori git
+            TARGET_REPO="${{ github.repository }}"
+            CURRENT_REPO="$(cd ~/app 2>/dev/null && git config --get remote.origin.url 2>/dev/null || true)"
+            if [ ! -d ~/app/.git ] || ! echo "$CURRENT_REPO" | grep -q "$TARGET_REPO"; then
+              rm -rf ~/app
+              git clone --depth 1 -b main https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git ~/app
+              cd ~/app
+            else
+              cd ~/app
+              git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
+              git reset --hard HEAD 2>/dev/null || true
+              git clean -fd 2>/dev/null || true
+              git fetch --depth 1 origin main
+              git checkout -B main FETCH_HEAD
+              git reset --hard FETCH_HEAD
+              git clean -fd
+            fi
+
+            # 2. Injeksi environment variables dari secrets
+            if [ -n "$APP_ENV_CONTENT" ]; then
+              echo "$APP_ENV_CONTENT" > .env
+            fi
+
+            # 3. Instalasi dependensi
+            npm install
+
+            # 4. Persiapan ORM & framework cache
+            if [ -f prisma/schema.prisma ] || grep -q '"prisma"' package.json 2>/dev/null; then
+              npx prisma generate 2>/dev/null || true
+            fi
+            if [ -f artisan ]; then
+              php artisan config:clear 2>/dev/null || true
+            fi
+
+            # 5. Build & kompilasi aplikasi
+            export NODE_OPTIONS="--max-old-space-size=1200"
+            NODE_OPTIONS='--max-old-space-size=1024' npm run build
+
+            # 6. Konfigurasi Nginx reverse proxy
+            if which nginx >/dev/null 2>&1; then
+              echo "c2VydmVyIHsKICAgIGxpc3RlbiA4MCBkZWZhdWx0X3NlcnZlcjsKICAgIGxpc3RlbiBbOjpdOjgwIGRlZmF1bHRfc2VydmVyOwogICAgc2VydmVyX25hbWUgXzsKICAgIGxvY2F0aW9uIC8gewogICAgICAgIHByb3h5X3Bhc3MgaHR0cDovLzEyNy4wLjAuMTozMDAwOwogICAgICAgIHByb3h5X2h0dHBfdmVyc2lvbiAxLjE7CiAgICAgICAgcHJveHlfc2V0X2hlYWRlciBVcGdyYWRlICRodHRwX3VwZ3JhZGU7CiAgICAgICAgcHJveHlfc2V0X2hlYWRlciBDb25uZWN0aW9uICd1cGdyYWRlJzsKICAgICAgICBwcm94eV9zZXRfaGVhZGVyIEhvc3QgJGhvc3Q7CiAgICAgICAgcHJveHlfc2V0X2hlYWRlciBYLVJlYWwtSVAgJHJlbW90ZV9hZGRyOwogICAgICAgIHByb3h5X3NldF9oZWFkZXIgWC1Gb3J3YXJkZWQtRm9yICRwcm94eV9hZGRfeF9mb3J3YXJkZWRfZm9yOwogICAgICAgIHByb3h5X3NldF9oZWFkZXIgWC1Gb3J3YXJkZWQtUHJvdG8gJHNjaGVtZTsKICAgICAgICBwcm94eV9jYWNoZV9ieXBhc3MgJGh0dHBfdXBncmFkZTsKICAgIH0KfQ==" | base64 -d > /etc/nginx/sites-available/default
+              nginx -t 2>/dev/null && systemctl reload nginx 2>/dev/null || true
+            fi
+
+            # 7. Menjalankan proses aplikasi via PM2 & auto-resurrect on reboot
+            pm2 delete app 2>/dev/null || true
+            pm2 delete app 2>/dev/null || true; pm2 start npm --name app -- start -- -p 3000
+            pm2 save 2>/dev/null || true
+            pm2 startup systemd -u root --hp /root 2>/dev/null || true
+            systemctl enable pm2-root 2>/dev/null || true
+
+            echo "✔ Aplikasi berhasil diperbarui dan aktif berjalan di port 3000."
+          REMOTE_SCRIPT_EOF
+          rm -f ~/.ssh/deploy_key
+
+      - name: 📊 Ringkasan Status Deployment (RuPa Cloud Summary)
+        if: success()
+        run: |
+          cat << 'EOF' >> $GITHUB_STEP_SUMMARY
+          ## ☁️ RuPa Cloud - Ringkasan Deployment
+          ### ✅ Deployment Berhasil!
+          Aplikasi **Next.js** berhasil diperbarui dan aktif berjalan di container RuPa Cloud.
+
+          | Parameter | Informasi |
+          | :--- | :--- |
+          | 📦 Framework | Next.js |
+          | 🌿 Branch | main |
+          | 🔖 Commit SHA | ${{ github.sha }} |
+          | 👤 Dipicu Oleh | ${{ github.actor }} |
+          | ⏱️ Waktu Selesai | $(date -u '+%Y-%m-%d %H:%M:%S UTC') |
+          EOF
+
+      - name: ⚠️ Ringkasan Kegagalan Deployment
+        if: failure()
+        run: |
+          cat << 'EOF' >> $GITHUB_STEP_SUMMARY
+          ## ☁️ RuPa Cloud - Ringkasan Deployment
+          ### ❌ Deployment Gagal!
+          Terjadi kendala saat proses deployment di container. Silakan periksa log step **🚀 SSH to RupaCloud Container & Deploy** di atas untuk melihat detail kesalahannya.
+          EOF
