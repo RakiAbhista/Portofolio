@@ -39,7 +39,8 @@ jobs:
         run: |
           echo "$SSH_PRIVATE_KEY" > ~/.ssh/deploy_key
           chmod 600 ~/.ssh/deploy_key
-          ssh -i ~/.ssh/deploy_key -p $SERVER_PORT -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ConnectTimeout=30 root@$SERVER_HOST "bash -s" << 'REMOTE_SCRIPT_EOF'
+          APP_ENV_B64=$(echo -n "$APP_ENV_CONTENT" | base64 -w 0)
+          ssh -i ~/.ssh/deploy_key -p $SERVER_PORT -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ConnectTimeout=30 -o BatchMode=yes root@$SERVER_HOST "APP_ENV_B64="$APP_ENV_B64" bash -s" << 'REMOTE_SCRIPT_EOF'
             set -e
             export GIT_TERMINAL_PROMPT=0
 
@@ -62,9 +63,10 @@ jobs:
             fi
 
             # 2. Injeksi environment variables dari secrets
-            if [ -n "$APP_ENV_CONTENT" ]; then
-              echo "$APP_ENV_CONTENT" > .env
+            if [ -n "$APP_ENV_B64" ]; then
+              echo "$APP_ENV_B64" | base64 -d > .env
             fi
+            sed -i 's/\\n/\n/g' .env 2>/dev/null || true
 
             # 3. Instalasi dependensi
             npm install
@@ -74,12 +76,18 @@ jobs:
               npx prisma generate 2>/dev/null || true
             fi
             if [ -f artisan ]; then
+              if [ ! -f .env ]; then cp .env.example .env 2>/dev/null || touch .env; fi
+              sed -i 's/\\n/\n/g' .env 2>/dev/null || true
+              if ! grep -q '^APP_KEY=.\+' .env 2>/dev/null; then
+                if ! grep -q '^APP_KEY=' .env 2>/dev/null; then echo '' >> .env; echo 'APP_KEY=' >> .env; fi
+                php artisan key:generate --force 2>/dev/null || true
+              fi
               php artisan config:clear 2>/dev/null || true
             fi
 
             # 5. Build & kompilasi aplikasi
-            export NODE_OPTIONS="--max-old-space-size=1200"
-            NODE_OPTIONS='--max-old-space-size=1024' npm run build
+            export NODE_OPTIONS="--max-old-space-size=350"
+            NODE_OPTIONS='--max-old-space-size=350' npm run build
 
             # 6. Konfigurasi Nginx reverse proxy
             if which nginx >/dev/null 2>&1; then
@@ -88,6 +96,12 @@ jobs:
             fi
 
             # 7. Menjalankan proses aplikasi via PM2 & auto-resurrect on reboot
+            if ! which pm2 >/dev/null 2>&1; then
+              if ! which node >/dev/null 2>&1; then
+                curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && apt-get install -y -qq nodejs
+              fi
+              npm install -g pm2 --silent 2>/dev/null || true
+            fi
             pm2 delete app 2>/dev/null || true
             pm2 delete app 2>/dev/null || true; pm2 start npm --name app -- start -- -p 3000
             pm2 save 2>/dev/null || true
